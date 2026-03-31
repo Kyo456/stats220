@@ -1,0 +1,81 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{css}
+html {
+background-color: grey;
+}
+
+body {
+width: 1200px;
+box-shadow: 0 0 24px 5px;
+margin: auto;
+background-color: #FFF;
+padding: 24px 32px;
+}
+
+h2 {
+font-size: 40px;
+text-align: center;
+width: 800px;
+margin: auto;
+}
+
+p {
+font-size: 24px;
+}
+```
+
+## Exploring the impact of the type of keyboard on typing performance
+
+This report aims to analyse how the type of keyboard has an effect on typing performance, specifically on the wpm and accuracy of typing tests. 
+
+```{r}
+library(tidyverse)
+
+# Loading the csv data
+logged_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQaDzheAaXF5a9Cf6sbnulXHtZlRLIaksuYAfhwZUM11gKalE0kH5rWjr_EphJrDWLkTUq6x9Ui58Pl/pub?output=csv") 
+
+# Renaming the relevant variables
+# The mutate function is used to shorten the name for the variable 'keyboard' so that it doesn't display the word 'keyboard' on every entry
+latest_data <- rename(
+  logged_data,
+  keyboard = 2,
+  wpm = 3,
+  acc = 4
+) %>% mutate(keyboard = str_remove(keyboard, " keyboard"))
+
+# The two summary values chosen for the report
+acc_mean <- mean(latest_data$acc)
+wpm_mean <- mean(latest_data$wpm)
+# The two bar charts chosen, with labels
+latest_data %>% ggplot() +
+  geom_bar(aes(x = wpm, fill = keyboard)) +
+  labs(title = "Keyboard impact on words per minute (wpm)",
+       subtitle = "Comparying the wpm achieved on a typing test to the type of keyboard used",
+       x = "Test wpm",
+       y = "Number of tests",
+       fill = "Keyboard type")
+
+latest_data %>% ggplot() +
+  geom_bar(aes(x = acc, fill = keyboard)) +
+  labs(title = "Keyboard impact on accuracy",
+       subtitle = "Comparing the accuracy of a typing test to the type of keyboard used",
+       x = "Test accuracy",
+       y = "Number of tests",
+       fill = "Keyboard type")
+
+```
+
+`r paste("The average accuracy across all the tests is", acc_mean)`
+
+`r paste("The average wpm across all the tests is", wpm_mean)`
+
+![](https://c.tenor.com/-qBsG1HwR4oAAAAC/tenor.gif)
